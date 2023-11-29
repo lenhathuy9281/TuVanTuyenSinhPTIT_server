@@ -1,4 +1,5 @@
 import nltk
+nltk.download('punkt')
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 import json
@@ -14,7 +15,7 @@ words=[]
 classes = []
 documents = []
 ignore_words = ['?', '!']
-data_file = open('data.json').read()
+data_file = open('data_copy.json').read()
 intents = json.loads(data_file)
 
 
