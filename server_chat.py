@@ -70,10 +70,6 @@ import database.utils as db
 app = Flask(__name__)
 app.static_folder = 'static'
 
-@app.route("/")
-def home():
-    return render_template("index.html")
-
 # @app.route("/get")
 # def get_bot_response():
 #     userText = request.args.get('msg')
@@ -185,6 +181,77 @@ def get_target_info():
         target_list.append(target_info)
 
     return jsonify({"targets":target_list})
+
+@app.route("/major", methods=["GET"])
+def get_major_info():
+    data = db.get_major_data()
+
+    # Kiểm tra xem có dữ liệu nào không
+    if not data:
+        return jsonify({"message": "No major data found"}), 404
+
+    # List để lưu thông tin cho tất cả các ngành học
+    major_list = []
+
+    # Duyệt qua mỗi ngành học trong dữ liệu
+    for major in data:
+        major_info = {
+            "id": major[0],
+            "tenNganh": major[1],
+            "maNganh": major[2],
+            "moTa": major[3],
+            "soTin": major[4],
+            "coSo": major[5]
+        }
+        major_list.append(major_info)
+
+    return jsonify({"majors":major_list})
+
+@app.route("/news", methods=["GET"])
+def get_news_info():
+    data = db.get_news_data()
+
+    # Kiểm tra xem có dữ liệu nào không
+    if not data:
+        return jsonify({"message": "No news data found"}), 404
+
+    # List để lưu thông tin cho tất cả các tin tức
+    news_list = []
+
+    # Duyệt qua mỗi tin tức trong dữ liệu
+    for news in data:
+        news_info = {
+            "id": news[0],
+            "title": news[1],
+            "image": news[2],
+            "fullDescription": news[3],
+            "time": news[4],
+            "shortDescription": news[5]
+        }
+        news_list.append(news_info)
+
+    return jsonify( {"news":news_list})
+
+@app.route("/news/detail", methods=["GET"])
+def get_news_detail_info():
+    news_id = request.args.get("id")
+    data = db.get_news_detail(news_id)
+
+    # Kiểm tra xem có dữ liệu nào không
+    if not data:
+        return jsonify({"message": f"No news found with ID {news_id}"}), 404
+
+    # Chuẩn bị thông tin chi tiết
+    news_detail = {
+        "id": data[0],
+        "title": data[1],
+        "image": data[2],
+        "fullDescription": data[3],
+        "time": data[4],
+        "shortDescription": data[5]
+    }
+
+    return jsonify(news_detail)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001)
